@@ -1,4 +1,4 @@
-# typescript-tricks
+# TypeScript Tricks
 
 ## `DeepImmutable` aka `DeepReadonly`
 
