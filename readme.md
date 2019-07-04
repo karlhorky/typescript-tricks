@@ -1,5 +1,15 @@
 # TypeScript Tricks
 
+My collection of TypeScript tricks from various sources.
+
+For Utility Types, you may have better luck with:
+
+- https://github.com/gcanti/typelevel-ts
+- https://github.com/pelotom/type-zoo
+- https://github.com/kgtkr/typepark
+- https://github.com/tycho01/typical
+- https://github.com/piotrwitek/utility-types
+
 ## `DeepImmutable` aka `DeepReadonly` Generic
 
 Deep immutable (readonly) generic type for specifying multi-level data structures that cannot be modified.
