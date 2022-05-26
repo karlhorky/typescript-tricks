@@ -12,8 +12,10 @@ To verify that an object has no keys, use `Record<string, never>`:
 type EmptyObject = Record<string, never>;
 
 const a: EmptyObject = {}; // ✅
-const b: EmptyObject = { z : 'z' }; // ❌
+const b: EmptyObject = { z : 'z' }; // ❌ Type 'string' is not assignable to type 'never'
 ```
+
+[Playground](https://www.typescriptlang.org/play?#code/C4TwDgpgBAogtmUB5ARgKwgY2FAvFAJSwHsAnAEwB4BnYUgSwDsBzAGikYgDcJSA+ANwAoIZmKNaUAIYAuWAmTosOfAG8AvgKgB6bVECg5KPGSUc+IhCoM2PFFVQAXlDkByBy6iadewDLkQA)
 
 ## Utility Types
 
