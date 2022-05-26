@@ -2,15 +2,31 @@
 
 My collection of TypeScript tricks from various sources.
 
-For Utility Types, you may have better luck with:
+## Types
 
+### Empty Object
+
+To verify that an object has no keys, use `Record<string, never>`:
+
+```ts
+type EmptyObject = Record<string, never>;
+
+const a: EmptyObject = {}; // ✅
+const b: EmptyObject = { z : 'z' }; // ❌
+```
+
+## Utility Types
+
+For higher quality utility types, you may have better luck with:
+
+- https://github.com/millsp/ts-toolbelt
 - https://github.com/gcanti/typelevel-ts
 - https://github.com/pelotom/type-zoo
 - https://github.com/kgtkr/typepark
 - https://github.com/tycho01/typical
 - https://github.com/piotrwitek/utility-types
 
-## `DeepImmutable` aka `DeepReadonly` Generic
+### `DeepImmutable` aka `DeepReadonly` Generic
 
 Deep immutable (readonly) generic type for specifying multi-level data structures that cannot be modified.
 
@@ -43,7 +59,7 @@ type DeepImmutableObject<T> = {
 }
 ```
 
-## `Opaque` Generic
+### `Opaque` Generic
 
 A generic type that allows for checking based on the name of the type ("opaque" type checking) as opposed to the data type ("transparent", the default in TypeScript).
 
@@ -73,7 +89,7 @@ createUser(
 type Opaque<K, T> = T & { __TYPE__: K };
 ```
 
-## `Spread` Generic
+### `Spread` Generic
 
 A generic type that allows for [more soundness](https://github.com/microsoft/TypeScript/pull/28553#issuecomment-440004598) while using object spreads and `Object.assign`.
 
