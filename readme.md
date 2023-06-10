@@ -1,6 +1,6 @@
 # TypeScript Tricks
 
-My collection of TypeScript tricks from various sources.
+A collection of useful TypeScript tricks
 
 ## Types
 
