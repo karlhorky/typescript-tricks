@@ -91,6 +91,70 @@ createUser(
 type Opaque<K, T> = T & { __TYPE__: K };
 ```
 
+### `Prettify` Generic
+
+A generic type that shows the final "resolved" type without indirection or abstraction.
+
+```ts
+const users = [
+  { id: 1, name: "Jane" },
+  { id: 2, name: "John" },
+] as const;
+
+type User = (typeof users)[number];
+
+type LiteralToBase<T> = T extends string
+  ? string
+  : T extends number
+  ? number
+  : T extends boolean
+  ? boolean
+  : T extends null
+  ? null
+  : T extends undefined
+  ? undefined
+  : T extends bigint
+  ? bigint
+  : T extends symbol
+  ? symbol
+  : T extends object
+  ? object
+  : never;
+
+type Widen<T> = {
+  [K in keyof T]: T[K] extends infer U ? LiteralToBase<U> : never;
+};
+
+export type Prettify<Type> = Type extends {}
+  ? Type extends infer Obj
+    ? Type extends Date
+      ? Date
+      : { [Key in keyof Obj]: Prettify<Obj[Key]> } & {}
+    : never
+  : Type;
+
+type WideUser = Widen<User>;
+//   ^? Widen<{ readonly id: 1; readonly name: "Jane"; }> | Widen<{ readonly id: 2; readonly name: "John"; }>
+
+type PrettyWideUser = Prettify<Widen<User>>;
+//   ^? { readonly id: number; readonly name: string; } | { readonly id: number; readonly name: string; }
+```
+
+**Credit:**
+
+- [Matt Pocock](https://twitter.com/mattpocockuk) in [`Prettify` type helper tweet](https://twitter.com/mattpocockuk/status/1622730173446557697)
+- [Aaron](https://twitter.com/nowlena) in [`Prettify` type helper tweet reply](https://twitter.com/nowlena/status/1622967286188630020)
+
+```ts
+export type Prettify<Type> = Type extends {}
+  ? Type extends infer Obj
+    ? Type extends Date
+      ? Date
+      : { [Key in keyof Obj]: Prettify<Obj[Key]> } & {}
+    : never
+  : Type;
+```
+
 ### `Spread` Generic
 
 A generic type that allows for [more soundness](https://github.com/microsoft/TypeScript/pull/28553#issuecomment-440004598) while using object spreads and `Object.assign`.
