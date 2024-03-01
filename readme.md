@@ -2,33 +2,7 @@
 
 A collection of useful TypeScript tricks
 
-## Types
-
-### Empty Object
-
-To verify that an object has no keys, use `Record<string, never>`:
-
-```ts
-type EmptyObject = Record<string, never>;
-
-const a: EmptyObject = {}; // ✅
-const b: EmptyObject = { z : 'z' }; // ❌ Type 'string' is not assignable to type 'never'
-```
-
-[Playground](https://www.typescriptlang.org/play?#code/C4TwDgpgBAogtmUB5ARgKwgY2FAvFAJSwHsAnAEwB4BnYUgSwDsBzAGikYgDcJSA+ANwAoIZmKNaUAIYAuWAmTosOfAG8AvgKgB6bVECg5KPGSUc+IhCoM2PFFVQAXlDkByBy6iadewDLkQA)
-
-## Utility Types
-
-For higher quality utility types, you may have better luck with:
-
-- https://github.com/millsp/ts-toolbelt
-- https://github.com/gcanti/typelevel-ts
-- https://github.com/pelotom/type-zoo
-- https://github.com/kgtkr/typepark
-- https://github.com/tycho01/typical
-- https://github.com/piotrwitek/utility-types
-
-### `DeepImmutable` aka `DeepReadonly` Generic
+## `DeepImmutable` aka `DeepReadonly` Generic
 
 Deep immutable (readonly) generic type for specifying multi-level data structures that cannot be modified.
 
@@ -61,7 +35,20 @@ type DeepImmutableObject<T> = {
 }
 ```
 
-### `Opaque` Generic
+## Empty Object Type
+
+To verify that an object has no keys, use `Record<string, never>`:
+
+```ts
+type EmptyObject = Record<string, never>;
+
+const a: EmptyObject = {}; // ✅
+const b: EmptyObject = { z : 'z' }; // ❌ Type 'string' is not assignable to type 'never'
+```
+
+[Playground](https://www.typescriptlang.org/play?#code/C4TwDgpgBAogtmUB5ARgKwgY2FAvFAJSwHsAnAEwB4BnYUgSwDsBzAGikYgDcJSA+ANwAoIZmKNaUAIYAuWAmTosOfAG8AvgKgB6bVECg5KPGSUc+IhCoM2PFFVQAXlDkByBy6iadewDLkQA)
+
+## `Opaque` Generic
 
 A generic type that allows for checking based on the name of the type ("opaque" type checking) as opposed to the data type ("transparent", the default in TypeScript).
 
@@ -91,7 +78,7 @@ createUser(
 type Opaque<K, T> = T & { __TYPE__: K };
 ```
 
-### `Prettify` Generic
+## `Prettify` Generic
 
 A generic type that shows the final "resolved" type without indirection or abstraction.
 
@@ -155,7 +142,7 @@ export type Prettify<Type> = Type extends {}
   : Type;
 ```
 
-### `Spread` Generic
+## `Spread` Generic
 
 A generic type that allows for [more soundness](https://github.com/microsoft/TypeScript/pull/28553#issuecomment-440004598) while using object spreads and `Object.assign`.
 
@@ -210,3 +197,14 @@ type Spread<L, R> =
     // Properties in R, with types that include undefined, that exist in L
     & SpreadProperties<L, R, OptionalPropertyNames<R> & keyof L>;
 ```
+
+## Related
+
+For higher quality utility types, you may have better luck with:
+
+- https://github.com/millsp/ts-toolbelt
+- https://github.com/gcanti/typelevel-ts
+- https://github.com/pelotom/type-zoo
+- https://github.com/kgtkr/typepark
+- https://github.com/tycho01/typical
+- https://github.com/piotrwitek/utility-types
