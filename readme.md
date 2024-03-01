@@ -48,6 +48,41 @@ const b: EmptyObject = { z : 'z' }; // ❌ Type 'string' is not assignable to ty
 
 [Playground](https://www.typescriptlang.org/play?#code/C4TwDgpgBAogtmUB5ARgKwgY2FAvFAJSwHsAnAEwB4BnYUgSwDsBzAGikYgDcJSA+ANwAoIZmKNaUAIYAuWAmTosOfAG8AvgKgB6bVECg5KPGSUc+IhCoM2PFFVQAXlDkByBy6iadewDLkQA)
 
+## `JSON.stringify()` an Object with Regular Expression Values
+
+`JSON.stringify()` on an object with regular expressions as values will behave in an unual way:
+
+```ts
+JSON.stringify({
+  name: 'update',
+  urlRegex: /^\/cohorts\/[^/]+$/,
+})
+// '{"name":"update","urlRegex":{}}'
+```
+
+Use a custom replacer function to call `.toString()` on the RegExp:
+
+```ts
+export function stringifyObjectWithRegexValues(obj: Record<string, unknown>) {
+  return JSON.stringify(obj, (key, value) => {
+    if (value instanceof RegExp) {
+      return value.toString();
+    }
+    return value;
+  });
+}
+```
+
+This will return a visible representation of the regular expression:
+
+```ts
+stringifyObjectWithRegexValues({
+  name: 'update',
+  urlRegex: /^\/cohorts\/[^/]+$/,
+})
+// '{"name":"update","urlRegex":"/^\\\\/cohorts\\\\/[^/]+$/"}'
+```
+
 ## `Opaque` Generic
 
 A generic type that allows for checking based on the name of the type ("opaque" type checking) as opposed to the data type ("transparent", the default in TypeScript).
