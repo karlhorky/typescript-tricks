@@ -48,6 +48,104 @@ const b: EmptyObject = { z : 'z' }; // ❌ Type 'string' is not assignable to ty
 
 [Playground](https://www.typescriptlang.org/play?#code/C4TwDgpgBAogtmUB5ARgKwgY2FAvFAJSwHsAnAEwB4BnYUgSwDsBzAGikYgDcJSA+ANwAoIZmKNaUAIYAuWAmTosOfAG8AvgKgB6bVECg5KPGSUc+IhCoM2PFFVQAXlDkByBy6iadewDLkQA)
 
+## Feature Flags
+
+[Implementing feature flags via `process.env.NODE_ENV` or `process.env.APP_ENV` has downsides](https://ricostacruz.com/posts/feature-flags#alternative-feature-flags) such as:
+
+1. Lack of granularity and control of specific singular features
+2. [Some environments such as Next.js ignoring the value for `process.env.NODE_ENV`](https://github.com/vercel/next.js/discussions/13410#discussioncomment-3663355)
+
+Instead, a minimal feature flags implementation can be written in TypeScript: 
+
+- Generate a typed feature flags object, with constrained feature flag key names
+- Feature flag default values are based on the environment (see comment in code below)
+- Each of the feature defaults can be overridden by setting a related environment variable eg. `FEATURE_APP1_CLOUDINARY_DISABLED=true pnpm start`
+
+`packages/common/util/featureFlags.ts`
+
+```ts
+/**
+ * Get feature flags object with default values based on
+ * environment:
+ *
+ * - true in development
+ * - true in Playwright tests
+ * - true in Vitest tests
+ * - false in other environments, eg. production
+ */
+export function getFeatureFlags<
+  const FeatureFlags extends `FEATURE_${
+    | 'APP1'
+    | 'APP2'
+    | 'APP3'}_${string}_${
+    | 'ENABLED'
+    | 'DISABLED'
+    | 'ENABLED_INSECURE'
+    | 'DISABLED_INSECURE'}`[],
+>(featureFlags: FeatureFlags) {
+  const isDevelopment = process.env.npm_lifecycle_event === 'dev';
+  const isPlaywright = !!process.env.PLAYWRIGHT;
+  const isVitest = !!process.env.VITEST;
+
+  return Object.fromEntries(
+    featureFlags.map((featureFlag) => [
+      featureFlag,
+      JSON.parse(
+        (typeof process !== 'undefined' &&
+        typeof process.env !== 'undefined' &&
+        typeof process.env[featureFlag] !== 'undefined'
+          ? // Prefer process.env[featureFlag] if it is set
+            (process.env[featureFlag] as 'true' | 'false')
+          : // Otherwise, use the default value based on environment
+            isDevelopment || isPlaywright || isVitest
+            ? 'true'
+            : 'false') satisfies 'true' | 'false',
+      ),
+    ]),
+  ) as Record<FeatureFlags[number], boolean>;
+}
+```
+
+Usage:
+
+`packages/app1/config.ts`
+
+```
+import { resolve } from 'node:path';
+import dotenvSafe from 'dotenv-safe';
+import { getFeatureFlags } from '../cargobay/util/featureFlags.js';
+
+export const config = {
+  ...getFeatureFlags([
+    'FEATURE_APP1_CLOUDINARY_DISABLED',
+    'FEATURE_APP1_RATE_LIMITING_DISABLED',
+    'FEATURE_APP1_TEST_RESPONSES_ENABLED_INSECURE',
+  ]),
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+  PORT: process.env.PORT as string,
+};
+
+export default config;
+```
+
+`packages/app1/util/cloudinary.ts`
+
+```ts
+import { config } from '../config.js';
+
+cloudinary.v2.config({
+  api_key: config.CLOUDINARY_API_KEY,
+  // ...
+});
+
+// ...
+
+export function deleteImageByPath(path: string) {
+  if (config.FEATURE_API_CLOUDINARY_DISABLED) return;
+  return cloudinary.v2.uploader.destroy(path);
+}
+```
+
 ## `JSON.stringify()` an Object with Regular Expression Values
 
 `JSON.stringify()` on an object with regular expressions as values will behave in an unual way:
