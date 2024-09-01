@@ -53,7 +53,7 @@ const b: EmptyObject = { z : 'z' }; // ❌ Type 'string' is not assignable to ty
 [Implementing feature flags via `process.env.NODE_ENV` or `process.env.APP_ENV` has downsides](https://ricostacruz.com/posts/feature-flags#alternative-feature-flags) such as:
 
 1. Lack of granularity and control of specific singular features
-2. [Some environments such as Next.js ignoring the value for `process.env.NODE_ENV`](https://github.com/vercel/next.js/discussions/13410#discussioncomment-3663355)
+2. [Some environments such as Next.js ignore the value for `process.env.NODE_ENV`](https://github.com/vercel/next.js/discussions/13410#discussioncomment-3663355)
 
 Instead, a minimal feature flags implementation can be written in TypeScript: 
 
