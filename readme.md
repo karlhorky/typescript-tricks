@@ -122,8 +122,6 @@ export const config = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
   PORT: process.env.PORT as string,
 };
-
-export default config;
 ```
 
 `packages/app1/util/cloudinary.ts`
