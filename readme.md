@@ -110,7 +110,7 @@ Usage:
 
 `packages/app1/config.ts`
 
-```
+```ts
 import { resolve } from 'node:path';
 import dotenvSafe from 'dotenv-safe';
 import { getFeatureFlags } from '../cargobay/util/featureFlags.js';
